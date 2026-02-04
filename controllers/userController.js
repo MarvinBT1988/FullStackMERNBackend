@@ -36,7 +36,7 @@ exports.createUser = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email,status:'active' });
         if (!user) return res.status(400).json({ msg: 'Usuario no encontrado' });
 
         const validPass = await bcrypt.compare(password, user.password);
