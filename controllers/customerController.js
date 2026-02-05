@@ -10,15 +10,21 @@ exports.createCustomer = async (req, res) => {
         // 1. Manejar errores de validación (required, enum, match)
         if (error.name === 'ValidationError') {
             const errores = Object.values(error.errors).map(err => err.message);
-            return res.status(400).json({
+            /*return res.status(400).json({
                 ok: false,
                 errores 
+            });*/
+            return res.status(400).json({
+                message: errores
             });
         }
         if (error.code === 11000) {
-            return res.status(400).json({
+           /* return res.status(400).json({
                 ok: false,
                 errores: ['El Cliente ya está registrado']
+            });*/
+             return res.status(400).json({
+                message: 'El Cliente ya está registrado'
             });
         }
         res.status(500).json({ error: error.message });
@@ -27,12 +33,12 @@ exports.createCustomer = async (req, res) => {
 
 exports.getCustomers = async (req, res) => {
     try {
-        const { dui, nombre } = req.query;
+        const { DUI, nombre } = req.query;
         let query = {};
         if (nombre) query.nombre = { $regex: nombre, $options: 'i' };
-        if (dui) query.dui = { $regex: dui, $options: 'i' };
+        if (DUI) query.DUI = { $regex: DUI, $options: 'i' };
 
-        const customers = await Customer.find(query);
+        const customers = await Customer.find(query).sort({ _id: -1 });
         res.json(customers);
     } catch (error) {
         res.status(500).json({ error: error.message });
